@@ -7,9 +7,9 @@ const FloatingPineconeChat = () => {
   const [messages, setMessages] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [debugInfo, setDebugInfo] = useState(null);
   const messageEndRef = useRef(null);
   
-  // Scroll to bottom of messages
   const scrollToBottom = () => {
     messageEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
@@ -20,13 +20,29 @@ const FloatingPineconeChat = () => {
     }
   }, [messages, isOpen]);
 
-  // Handle sending messages to Pinecone via our API proxy
+  // Test the API connection when the chat is opened
+  useEffect(() => {
+    if (isOpen) {
+      // Test the API endpoint
+      fetch('/api/hello')
+        .then(res => {
+          if (res.ok) return res.json();
+          throw new Error(`API test failed with status: ${res.status}`);
+        })
+        .then(data => {
+          setDebugInfo(`API test successful: ${JSON.stringify(data)}`);
+        })
+        .catch(err => {
+          setDebugInfo(`API test error: ${err.message}`);
+        });
+    }
+  }, [isOpen]);
+
   const sendMessage = async (e) => {
     e?.preventDefault();
     
     if (!input.trim()) return;
     
-    // Add user message to chat
     const userMessage = { role: 'user', content: input };
     setMessages(prevMessages => [...prevMessages, userMessage]);
     setInput('');
@@ -34,14 +50,21 @@ const FloatingPineconeChat = () => {
     setError(null);
   
     try {
-      // Create the conversation history
       const pineconeMessages = messages.concat(userMessage).map(msg => ({
         role: msg.role,
         content: msg.content
       }));
   
-      // Use the proxy API endpoint instead of direct Pinecone call
-      const response = await fetch('/api/pinecone', {
+      // Log what we're about to send
+      console.log('Sending to proxy:', JSON.stringify({
+        messages: pineconeMessages,
+      }));
+      
+      // Use absolute URL to make sure we're hitting the right endpoint
+      const apiUrl = window.location.origin + '/api/pinecone';
+      console.log('Using API URL:', apiUrl);
+      
+      const response = await fetch(apiUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -51,20 +74,24 @@ const FloatingPineconeChat = () => {
         }),
       });
   
+      console.log('Response status:', response.status);
+      
       if (!response.ok) {
-        throw new Error(`API error: ${response.status}`);
+        const errorText = await response.text();
+        console.error('API error response:', errorText);
+        throw new Error(`API error: ${response.status} - ${errorText}`);
       }
   
       const data = await response.json();
+      console.log('Response data:', data);
       
-      // Add assistant response to chat
       setMessages(prevMessages => [
         ...prevMessages, 
         { role: 'assistant', content: data.message.content }
       ]);
     } catch (error) {
       console.error('Error communicating with assistant:', error);
-      setError('Failed to connect to the assistant. Please try again later.');
+      setError(`Failed to connect: ${error.message}`);
       setMessages(prevMessages => [
         ...prevMessages,
         { role: 'assistant', content: 'Sorry, I encountered an error. Please try again.' }
@@ -74,10 +101,8 @@ const FloatingPineconeChat = () => {
     }
   };
 
-  // Floating chat bubble UI
   return (
     <div className="fixed bottom-6 right-6 z-50">
-      {/* Chat Bubble Button */}
       {!isOpen && (
         <button
           onClick={() => setIsOpen(true)}
@@ -87,10 +112,8 @@ const FloatingPineconeChat = () => {
         </button>
       )}
       
-      {/* Chat Window */}
       {isOpen && (
         <div className="w-80 sm:w-96 h-96 bg-white rounded-2xl shadow-xl flex flex-col border border-slate-200 overflow-hidden">
-          {/* Chat Header */}
           <div className="bg-indigo-600 text-white px-4 py-3 flex items-center justify-between">
             <div className="flex items-center">
               <div className="w-3 h-3 bg-white rounded-full mr-2 animate-pulse"></div>
@@ -112,8 +135,13 @@ const FloatingPineconeChat = () => {
             </div>
           </div>
           
-          {/* Messages Area */}
           <div className="flex-1 overflow-y-auto p-4 bg-indigo-50/50">
+            {debugInfo && (
+              <div className="p-2 mb-2 bg-blue-50 text-blue-600 rounded-lg text-xs">
+                Debug: {debugInfo}
+              </div>
+            )}
+            
             {error && (
               <div className="flex items-center p-2 mb-2 bg-red-50 text-red-600 rounded-lg text-xs">
                 <AlertCircle className="w-4 h-4 mr-1" />
@@ -158,7 +186,6 @@ const FloatingPineconeChat = () => {
             )}
           </div>
           
-          {/* Input Area */}
           <div className="p-3 border-t border-slate-200">
             <form onSubmit={sendMessage} className="flex">
               <input
