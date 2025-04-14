@@ -22,9 +22,14 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
+  // Enhanced error handling in pinecone.js
   try {
     const PINECONE_HOST = 'https://prod-1-data.ke.pinecone.io';
     const PINECONE_API_KEY = process.env.PINECONE_API_KEY;
+
+    if (!PINECONE_API_KEY) {
+      throw new Error('PINECONE_API_KEY is not configured');
+    }
 
     // Forward the request to Pinecone
     const response = await axios({
@@ -34,16 +39,23 @@ export default async function handler(req, res) {
         'Content-Type': 'application/json',
         'Api-Key': PINECONE_API_KEY
       },
-      data: req.body
+      data: req.body,
+      timeout: 10000 // 10 second timeout
     });
 
     // Return the Pinecone response
     return res.status(200).json(response.data);
   } catch (error) {
     console.error('Error proxying to Pinecone:', error);
-    return res.status(500).json({ 
+    
+    // Return more detailed error information
+    const statusCode = error.response?.status || 500;
+    const errorMessage = error.response?.data?.error || error.message;
+    
+    return res.status(statusCode).json({ 
       error: 'Error connecting to Pinecone',
-      details: error.message
+      details: errorMessage,
+      timestamp: new Date().toISOString()
     });
   }
 }
