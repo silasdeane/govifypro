@@ -32,7 +32,7 @@ function App() {
         </div>
         
         {/* Nova AI Assistant - Now enabled */}
-        <PineconeAssistant />
+        <PineconeChat />
       </div>
     </Router>
   );
