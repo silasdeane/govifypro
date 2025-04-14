@@ -1,0 +1,40 @@
+# Create more specific .gitignore
+echo "# Python virtual environments
+venv/
+*/venv/
+**/venv/
+src/venv/
+src/backend/venv/
+**/site-packages/
+**/__pycache__/
+
+# Specific large files
+**/libtorch_cpu.dylib
+**/*.dylib
+**/*.so
+**/*.pyd
+**/*.dll
+
+# Node modules
+node_modules/
+**/node_modules/
+
+# Environment variables
+.env
+**/.env
+
+# Python cache
+*.py[cod]
+*$py.class
+.Python
+*.log
+
+# Build files
+/build/
+/dist/
+*/build/
+*/dist/
+
+# OS specific
+.DS_Store
+**/.DS_Store" > .gitignore

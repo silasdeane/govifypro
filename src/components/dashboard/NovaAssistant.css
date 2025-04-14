@@ -1,0 +1,577 @@
+.nova-floating-assistant {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+/* Toggle Button */
+.nova-toggle-button {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background-color: #1a237e;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border: none;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+.nova-toggle-button:hover {
+  background-color: #283593;
+  transform: scale(1.05);
+}
+
+.nova-toggle-button span {
+  font-size: 24px;
+  line-height: 1;
+}
+
+/* Status dot */
+.nova-status-dot {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 2px solid #1a237e;
+}
+
+.nova-status-dot.online {
+  background-color: #4caf50;
+}
+
+.nova-status-dot.offline {
+  background-color: #f44336;
+}
+
+/* Chat Window */
+.nova-chat-window {
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  width: 350px;
+  height: 500px;
+  margin-bottom: 16px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  max-height: 70vh;
+}
+
+/* State Transitions */
+.nova-floating-assistant.closed .nova-chat-window {
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(20px);
+  height: 0;
+  margin-bottom: 0;
+}
+
+.nova-floating-assistant.open .nova-chat-window {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+/* Chat Header */
+.nova-chat-header {
+  padding: 15px;
+  background-color: #1a237e;
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+}
+
+.nova-chat-header h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+/* Status badges */
+.nova-assistant-status {
+  display: flex;
+  align-items: center;
+}
+
+.status-badge {
+  font-size: 0.7rem;
+  padding: 3px 6px;
+  border-radius: 10px;
+  font-weight: 500;
+}
+
+.status-badge.online {
+  background-color: rgba(76, 175, 80, 0.2);
+  color: #4caf50;
+}
+
+.status-badge.offline {
+  background-color: rgba(244, 67, 54, 0.2);
+  color: #f44336;
+}
+
+.status-badge.checking {
+  background-color: rgba(255, 152, 0, 0.2);
+  color: #ff9800;
+}
+
+/* Error message */
+.nova-assistant-error {
+  padding: 8px 15px;
+  background-color: #ffebee;
+  color: #d32f2f;
+  font-size: 0.8rem;
+  text-align: center;
+}
+
+/* Chat Messages Container */
+.nova-chat-messages {
+  flex: 1;
+  padding: 15px;
+  overflow-y: auto;
+  background-color: #f5f7fb;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Message Styling */
+.message {
+  max-width: 80%;
+  padding: 10px 12px;
+  border-radius: 10px;
+  line-height: 1.4;
+  word-break: break-word;
+  font-size: 0.9rem;
+}
+
+.user-message {
+  align-self: flex-end;
+  background-color: #e3f2fd;
+  color: #0d47a1;
+  border-bottom-right-radius: 4px;
+}
+
+.assistant-message {
+  align-self: flex-start;
+  background-color: white;
+  color: #333;
+  border-bottom-left-radius: 4px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.error-message {
+  background-color: #ffebee;
+  color: #c62828;
+}
+
+/* Message content */
+.message-content {
+  margin-bottom: 4px;
+}
+
+/* Sources */
+.message-sources {
+  font-size: 0.7rem;
+  margin-top: 6px;
+  color: #546e7a;
+}
+
+.sources-header {
+  font-weight: bold;
+  margin-bottom: 2px;
+}
+
+.sources-list {
+  margin: 0;
+  padding-left: 16px;
+}
+
+.source-name {
+  font-style: italic;
+}
+
+.message-time {
+  font-size: 0.65rem;
+  color: #9e9e9e;
+  text-align: right;
+  margin-top: 3px;
+}
+
+/* Input Area */
+.nova-chat-input {
+  display: flex;
+  padding: 10px 15px;
+  border-top: 1px solid #e0e0e0;
+  background-color: white;
+}
+
+.nova-chat-input input {
+  flex: 1;
+  padding: 10px 12px;
+  border: 1px solid #e0e0e0;
+  border-radius: 20px;
+  outline: none;
+  font-size: 0.9rem;
+}
+
+.nova-chat-input input:focus {
+  border-color: #1a237e;
+}
+
+.nova-chat-input button {
+  margin-left: 8px;
+  width: 36px;
+  height: 36px;
+  background-color: #1a237e;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s;
+}
+
+.nova-chat-input button:hover {
+  background-color: #283593;
+}
+
+.nova-chat-input button:disabled {
+  background-color: #9fa8da;
+  cursor: not-allowed;
+}
+
+/* Loading spinner */
+.loading-spinner {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-radius: 50%;
+  border-top-color: white;
+  animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Responsive adjustments */
+@media (max-width: 767px) {
+  .nova-chat-window {
+    width: 300px;
+    height: 450px;
+  }
+  
+  .nova-toggle-button {
+    width: 45px;
+    height: 45px;
+  }
+  
+  .nova-floating-assistant {
+    bottom: 15px;
+    right: 15px;
+  }
+}
+
+
+/* Styling for suggested questions */
+.suggested-questions {
+  padding: 12px 16px;
+  background-color: #f1f5f9;
+  border-top: 1px solid #e2e8f0;
+}
+
+.suggestions-label {
+  font-size: 12px;
+  color: #6b7280;
+  margin-bottom: 8px;
+}
+
+.suggestions-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.suggestion-button {
+  font-size: 13px;
+  background-color: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 6px 12px;
+  color: #4f46e5;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 200px;
+}
+
+.suggestion-button:hover {
+  background-color: #4f46e5;
+  color: white;
+  border-color: #4f46e5;
+}
+
+/* Make sure we don't show too many buttons on small screens */
+@media (max-width: 400px) {
+  .suggestions-list {
+    flex-direction: column;
+  }
+  
+  .suggestion-button {
+    max-width: 100%;
+  }
+}
+
+
+/* Enhanced styling for sources display */
+
+.message-sources {
+  margin-top: 8px;
+  border-top: 1px solid #e2e8f0;
+  padding-top: 8px;
+  font-size: 12px;
+}
+
+.sources-toggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  padding: 4px 0;
+  color: #6b7280;
+  font-size: 12px;
+  cursor: pointer;
+  width: 100%;
+  text-align: left;
+  transition: all 0.2s;
+}
+
+.sources-toggle:hover {
+  color: #4f46e5;
+}
+
+.sources-icon {
+  font-size: 10px;
+  width: 12px;
+  display: inline-block;
+  transition: transform 0.2s;
+}
+
+.sources-content {
+  margin-top: 6px;
+  padding-left: 12px;
+  max-height: 120px;
+  overflow-y: auto;
+  animation: slideDown 0.2s ease-out;
+}
+
+.source-quality-note {
+  font-style: italic;
+  color: #ef4444;
+  margin-bottom: 8px;
+  padding: 4px 8px;
+  background-color: rgba(239, 68, 68, 0.05);
+  border-radius: 4px;
+}
+
+.sources-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.sources-list li {
+  margin-bottom: 6px;
+  display: flex;
+  flex-direction: column;
+}
+
+.source-name {
+  color: #6b7280;
+  word-break: break-all;
+}
+
+.source-score {
+  font-size: 10px;
+  color: #94a3b8;
+}
+
+/* When we have repeated sources, make it more compact */
+.sources-list li:nth-child(n+4) {
+  opacity: 0.8;
+}
+
+/* Add a "more sources" indicator when we have many */
+.sources-list:has(li:nth-child(6))::after {
+  content: "...more sources available";
+  color: #94a3b8;
+  font-style: italic;
+  font-size: 10px;
+  display: block;
+  margin-top: 4px;
+}
+
+@keyframes slideDown {
+  from {
+    max-height: 0;
+    opacity: 0;
+  }
+  to {
+    max-height: 120px;
+    opacity: 1;
+  }
+}
+
+/* Clear history button styling */
+.clear-history-button {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.7);
+  cursor: pointer;
+  padding: 4px;
+  margin-left: 8px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.clear-history-button:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+/* Increase the overall size of the chat window */
+.nova-chat-window {
+  width: 550px;  /* Increased from 350px */
+  height: 750px; /* Increased from 500px */
+}
+
+/* Make the suggestions area more spacious */
+.suggested-questions {
+  padding: 16px;  /* Increased padding */
+}
+
+.suggestions-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;      /* Increased gap between buttons */
+  margin-top: 8px;
+}
+
+.suggestion-button {
+  font-size: 14px;   /* Slightly larger font */
+  padding: 8px 14px; /* More padding inside buttons */
+  max-width: 300px;  /* Allow longer suggestion text */
+}
+
+/* Make the chat input area larger */
+.nova-chat-input {
+  padding: 16px;  /* Increased padding */
+}
+
+.nova-chat-input input {
+  padding: 14px 18px; /* Larger input field */
+  font-size: 15px;    /* Slightly larger font */
+}
+
+.nova-chat-input button {
+  width: 46px;  /* Larger send button */
+  height: 46px;
+}
+
+/* Make the toggle button larger */
+.nova-toggle-button {
+  width: 65px;   /* Larger toggle button */
+  height: 65px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .nova-chat-window {
+    width: 380px; /* Still larger than original but works on mobile */
+    height: 550px;
+  }
+  
+  .nova-toggle-button {
+    width: 55px;
+    height: 55px;
+  }
+}
+
+/* Enhanced styling for suggested questions */
+.suggestions-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: #4b5563;
+  margin-bottom: 10px;
+}
+
+.suggestion-button {
+  font-size: 14px;
+  background-color: #f3f4f6;
+  border: 1px solid #e5e7eb;
+  border-radius: 20px;
+  padding: 8px 16px;
+  color: #4f46e5;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 300px;
+  font-weight: 500;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.suggestion-button:hover {
+  background-color: #4f46e5;
+  color: white;
+  border-color: #4f46e5;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px rgba(79, 70, 229, 0.1);
+}
+
+.suggestion-button:active {
+  transform: translateY(0);
+  box-shadow: 0 1px 2px rgba(79, 70, 229, 0.1);
+}
+
+/* Add a subtle divider between chat and suggestions */
+.suggested-questions {
+  border-top: 1px solid #e5e7eb;
+  background-color: #f9fafb;
+  padding: 16px;
+}
+
+/* Improve spacing for better readability */
+.suggestions-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: flex-start;
+}
