@@ -2,16 +2,16 @@
 export default async function handler(req, res) {
   console.log('API route hit: /api/pinecone');
   
-  // Set CORS headers
+  // Set CORS headers to allow requests from your domain
   res.setHeader('Access-Control-Allow-Credentials', true);
-  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Origin', '*'); // In production, set this to your specific domain
   res.setHeader('Access-Control-Allow-Methods', 'GET,POST,OPTIONS');
   res.setHeader(
     'Access-Control-Allow-Headers',
     'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
   );
 
-  // Handle OPTIONS request
+  // Handle OPTIONS request (preflight)
   if (req.method === 'OPTIONS') {
     console.log('Handling OPTIONS request');
     res.status(200).end();
@@ -26,6 +26,7 @@ export default async function handler(req, res) {
 
   try {
     // Get the required environment variables
+    // Make sure these are set in your Vercel environment
     const PINECONE_HOST = process.env.PINECONE_HOST || 'https://prod-1-data.ke.pinecone.io';
     const PINECONE_API_KEY = process.env.PINECONE_API_KEY;
 
@@ -38,10 +39,10 @@ export default async function handler(req, res) {
       return res.status(500).json({ error: 'Server configuration error - API key missing' });
     }
 
-    // Format messages according to Pinecone's expected format
-    const messages = req.body.messages.map(msg => ({
-      role: msg.role,
-      content: msg.content
+    // Log the request structure without revealing sensitive info
+    console.log('Request body structure:', JSON.stringify({
+      hasMessages: !!req.body.messages,
+      messageCount: req.body.messages ? req.body.messages.length : 0
     }));
 
     // Prepare the request to Pinecone
@@ -55,7 +56,9 @@ export default async function handler(req, res) {
         'Content-Type': 'application/json',
         'Api-Key': PINECONE_API_KEY
       },
-      body: JSON.stringify({ messages })
+      body: JSON.stringify({
+        messages: req.body.messages
+      })
     });
 
     console.log('Pinecone response status:', response.status);
@@ -72,6 +75,13 @@ export default async function handler(req, res) {
     // Return the Pinecone response
     const data = await response.json();
     console.log('Successfully received response from Pinecone');
+    
+    // Log the response structure without revealing sensitive info
+    console.log('Response structure:', JSON.stringify({
+      hasMessage: !!data.message,
+      messageRole: data.message ? data.message.role : null
+    }));
+    
     return res.status(200).json(data);
   } catch (error) {
     console.error('Error proxying to Pinecone:', error);
