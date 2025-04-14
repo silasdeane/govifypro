@@ -9,11 +9,6 @@ const FloatingPineconeChat = () => {
   const [error, setError] = useState(null);
   const messageEndRef = useRef(null);
   
-  // API configuration
-  const PINECONE_HOST = 'https://prod-1-data.ke.pinecone.io';
-  // This will be replaced with an environment variable
-  const PINECONE_API_KEY = process.env.REACT_APP_PINECONE_API_KEY || '';
-  
   // Scroll to bottom of messages
   const scrollToBottom = () => {
     messageEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -25,8 +20,10 @@ const FloatingPineconeChat = () => {
     }
   }, [messages, isOpen]);
 
-  // Handle sending messages to Pinecone
-  const sendMessage = async (e) => {
+  // Handle sending messages to Pinecone via our API proxy
+  // Update the sendMessage function in FloatingPineconeChat.jsx
+
+const sendMessage = async (e) => {
     e?.preventDefault();
     
     if (!input.trim()) return;
@@ -37,30 +34,29 @@ const FloatingPineconeChat = () => {
     setInput('');
     setIsLoading(true);
     setError(null);
-
+  
     try {
       // Create the conversation history
       const pineconeMessages = messages.concat(userMessage).map(msg => ({
         role: msg.role,
         content: msg.content
       }));
-
-      // Direct API call to Pinecone
-      const response = await fetch(`${PINECONE_HOST}/assistants/phoenixville/chat`, {
+  
+      // Use the proxy API endpoint instead of direct Pinecone call
+      const response = await fetch('/api/pinecone', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Api-Key': PINECONE_API_KEY,
         },
         body: JSON.stringify({
           messages: pineconeMessages,
         }),
       });
-
+  
       if (!response.ok) {
-        throw new Error(`Pinecone API error: ${response.status}`);
+        throw new Error(`API error: ${response.status}`);
       }
-
+  
       const data = await response.json();
       
       // Add assistant response to chat
@@ -69,7 +65,7 @@ const FloatingPineconeChat = () => {
         { role: 'assistant', content: data.message.content }
       ]);
     } catch (error) {
-      console.error('Error communicating with Pinecone:', error);
+      console.error('Error communicating with assistant:', error);
       setError('Failed to connect to the assistant. Please try again later.');
       setMessages(prevMessages => [
         ...prevMessages,
@@ -79,74 +75,6 @@ const FloatingPineconeChat = () => {
       setIsLoading(false);
     }
   };
-
-  // Handle streaming chat option (commented out until implemented)
-  /*
-  const streamChat = async () => {
-    if (!input.trim()) return;
-    
-    const userMessage = { role: 'user', content: input };
-    setMessages(prevMessages => [...prevMessages, userMessage]);
-    setInput('');
-    setIsLoading(true);
-    
-    try {
-      const eventSource = new EventSource(
-        `${PINECONE_HOST}/mcp/assistants/phoenixville/sse?api-key=${PINECONE_API_KEY}`
-      );
-      
-      let assistantMessage = '';
-      
-      eventSource.onmessage = (event) => {
-        const data = JSON.parse(event.data);
-        assistantMessage += data.content;
-        
-        // Update the message in real-time
-        setMessages(prevMessages => {
-          const updatedMessages = [...prevMessages];
-          const assistantMsgIndex = updatedMessages.findIndex(
-            msg => msg.role === 'assistant' && msg.isStreaming
-          );
-          
-          if (assistantMsgIndex >= 0) {
-            updatedMessages[assistantMsgIndex].content = assistantMessage;
-          } else {
-            updatedMessages.push({ 
-              role: 'assistant', 
-              content: assistantMessage,
-              isStreaming: true 
-            });
-          }
-          
-          return updatedMessages;
-        });
-      };
-      
-      eventSource.onerror = (error) => {
-        console.error('SSE Error:', error);
-        eventSource.close();
-        setIsLoading(false);
-        
-        // Mark the message as no longer streaming
-        setMessages(prevMessages => {
-          return prevMessages.map(msg => {
-            if (msg.isStreaming) {
-              return { ...msg, isStreaming: false };
-            }
-            return msg;
-          });
-        });
-      };
-      
-      // Send the message
-      // This would need to be implemented
-      
-    } catch (error) {
-      console.error('Streaming error:', error);
-      setIsLoading(false);
-    }
-  };
-  */
 
   // Floating chat bubble UI
   return (
