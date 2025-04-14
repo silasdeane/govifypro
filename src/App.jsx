@@ -8,7 +8,7 @@ import GovifyAppsPage from './components/dashboard/GovifyAppsPage';
 import GovifyPeoplePage from './components/dashboard/GovifyPeoplePage';
 import GovifyDocumentsPage from './components/dashboard/GovifyDocumentsPage';
 import GovifySettingsPage from './components/dashboard/GovifySettingsPage';
-import PineconeChat from './components/dashboard/PineconeChat';
+import FloatingPineconeChat from './components/FloatingPineconeChat';
 
 function App() {
   return (
@@ -31,8 +31,13 @@ function App() {
           </Routes>
         </div>
         
+<<<<<<< HEAD
         {/* Nova AI Assistant - Now enabled */}
         <PineconeChat />
+=======
+        {/* Nova AI Assistant - Using the new floating bubble chat */}
+        <FloatingPineconeChat />
+>>>>>>> 1ee3568 (Add floating Pinecone chat component and update App.jsx)
       </div>
     </Router>
   );
