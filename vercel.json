@@ -10,15 +10,19 @@
       }
     ],
     "routes": [
+      { "src": "/api/(.*)", "dest": "/api/$1.js" },
       { "src": "/static/(.*)", "dest": "/static/$1" },
       { "src": "/favicon.ico", "dest": "/favicon.ico" },
       { "src": "/manifest.json", "dest": "/manifest.json" },
-      { "src": "/(.*)", "dest": "/index.html" },
-      { "src": "/api/(.*)", "dest": "/api/$1" }
+      { "src": "/(.*)", "dest": "/index.html" }
     ],
     "functions": {
-        "api/**/*.js": {
+      "api/**/*.js": {
         "runtime": "nodejs18.x"
-        }
+      }
+    },
+    "env": {
+      "PINECONE_API_KEY": "@pinecone_api_key",
+      "PINECONE_HOST": "https://prod-1-data.ke.pinecone.io"
     }
   }

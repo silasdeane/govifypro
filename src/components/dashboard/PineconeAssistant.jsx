@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 
-function PineconeChat() {
+function PineconeAssistant() {
   const [input, setInput] = useState('');
   const [messages, setMessages] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
   // API configuration
   const PINECONE_HOST = 'https://prod-1-data.ke.pinecone.io';
-  const PINECONE_API_KEY = 'csk_1MfLA_QRmNnRSR4pumc7thAYp6eqHkxGF3Jhmbs9X66SN2i1Rr4akBzmERV5NCjyBhE8e';
+  const PINECONE_API_KEY = 'csk_1MfLA_QRmNnRSR4pumc7thAYp6eqHkxGF3Jhmbs9X66SN2i1Rr4akBzmERV5NCjyBhE8e'; // Consider using environment variables in production
 
   // Handle sending messages to Pinecone
   const sendMessage = async (e) => {
@@ -28,11 +28,12 @@ function PineconeChat() {
         content: msg.content
       }));
 
-      // Direct API call to Pinecone
-      const response = await fetch('/api/pinecone', {
+      // Direct API call to Pinecone (CORS extension will handle the requests)
+      const response = await fetch(`${PINECONE_HOST}/assistants/phoenixville/chat`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Api-Key': PINECONE_API_KEY,
         },
         body: JSON.stringify({
           messages: pineconeMessages,
@@ -84,4 +85,4 @@ function PineconeChat() {
   );
 }
 
-export default PineconeChat;
+export default PineconeAssistant;

@@ -25,8 +25,9 @@ export default async function handler(req, res) {
   }
 
   try {
-    const PINECONE_HOST = process.env.REACT_APP_PINECONE_HOST || 'https://prod-1-data.ke.pinecone.io';
-    const PINECONE_API_KEY = process.env.PINECONE_API_KEY || process.env.REACT_APP_PINECONE_API_KEY;
+    // Get the required environment variables
+    const PINECONE_HOST = process.env.PINECONE_HOST || 'https://prod-1-data.ke.pinecone.io';
+    const PINECONE_API_KEY = process.env.PINECONE_API_KEY;
 
     console.log('Environment variables:');
     console.log('- PINECONE_HOST:', PINECONE_HOST);
@@ -37,14 +38,15 @@ export default async function handler(req, res) {
       return res.status(500).json({ error: 'Server configuration error - API key missing' });
     }
 
+    // Format messages according to Pinecone's expected format
+    const messages = req.body.messages.map(msg => ({
+      role: msg.role,
+      content: msg.content
+    }));
+
+    // Prepare the request to Pinecone
     const pineconeUrl = `${PINECONE_HOST}/assistants/phoenixville/chat`;
     console.log('Making request to Pinecone at:', pineconeUrl);
-    
-    // Log the request body (sanitize for security)
-    const reqBodySanitized = { ...req.body };
-    if (reqBodySanitized.messages) {
-      console.log('Request contains', reqBodySanitized.messages.length, 'messages');
-    }
     
     // Forward the request to Pinecone
     const response = await fetch(pineconeUrl, {
@@ -53,7 +55,7 @@ export default async function handler(req, res) {
         'Content-Type': 'application/json',
         'Api-Key': PINECONE_API_KEY
       },
-      body: JSON.stringify(req.body)
+      body: JSON.stringify({ messages })
     });
 
     console.log('Pinecone response status:', response.status);
