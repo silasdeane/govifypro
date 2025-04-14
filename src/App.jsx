@@ -8,7 +8,7 @@ import GovifyAppsPage from './components/dashboard/GovifyAppsPage';
 import GovifyPeoplePage from './components/dashboard/GovifyPeoplePage';
 import GovifyDocumentsPage from './components/dashboard/GovifyDocumentsPage';
 import GovifySettingsPage from './components/dashboard/GovifySettingsPage';
-import PineconeAssistant from './components/dashboard/PineconeAssistant';
+import PineconeChat from './components/dashboard/PineconeChat';
 
 function App() {
   return (
