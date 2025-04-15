@@ -1,7 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Sidebar from './components/layout/Sidebar';
-import GovifyCommandCenter from './components/GovifySmaller';
+import GovifyCommandCenter from './components/GovifyNEW';
 import GovifyCommsPage from './components/dashboard/GovifyCommsPage';
 import GovifyDataPage from './components/dashboard/GovifyDataPage';
 import GovifyAppsPage from './components/dashboard/GovifyAppsPage';
